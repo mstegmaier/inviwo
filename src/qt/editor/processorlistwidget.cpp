@@ -56,7 +56,7 @@
 #include <QHeaderView>
 #include <QSettings>
 #include <QVariant>
-
+#include <QString>
 #include <chrono>
 #include <ctime>
 #include <warn/pop>
@@ -329,8 +329,8 @@ void ProcessorTreeWidget::addProcessor(QString className) {
     }
 }
 
-bool ProcessorTreeWidget::processorFits(ProcessorFactoryObject* processor, const QString& filter) {
-    for (auto& substr : filter.splitRef(' ')) {
+bool ProcessorTreeWidget::processorFits(ProcessorFactoryObject* processor, QStringView filter) {
+    for (auto& substr : filter.split(' ')) {
         if (!(utilqt::toQString(processor->getDisplayName())
                   .contains(substr, Qt::CaseInsensitive) ||
               utilqt::toQString(processor->getClassIdentifier())

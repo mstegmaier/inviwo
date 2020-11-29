@@ -38,6 +38,7 @@
 #include <warn/ignore/all>
 #include <QTextDocument>
 #include <QTextBlock>
+#include <QRegularExpression>
 #include <warn/pop>
 
 namespace {
@@ -233,17 +234,17 @@ public:
     GLSLCommentFormater(const QTextCharFormat& format)
         : format_(format)
         , oneLineComment_("\\/\\/")
-        , blockStart_(QRegExp::escape("/*"))
-        , blockEnd_(QRegExp::escape("*/")) {}
+        , blockStart_(QRegularExpression::escape("/*"))
+        , blockEnd_(QRegularExpression::escape("*/")) {}
 
     virtual Result eval(const QString& text, const int& previousBlockState) override {
         Result res;
         res.format = &format_;
 
-        int commentBegin = oneLineComment_.indexIn(text);
-        if (commentBegin != -1) {
-            res.start.push_back(commentBegin);
-            res.length.push_back(text.size() - commentBegin);
+        auto commentMatch = oneLineComment_.match(text);
+        if (commentMatch.hasMatch()) {
+            res.start.push_back(commentMatch.capturedStart());
+            res.length.push_back(text.size() - commentMatch.capturedStart());
             return res;
         }
 
@@ -251,32 +252,30 @@ public:
 
         if (previousBlockState != -1 && previousBlockState) {
             res.start.push_back(0);
-            int i = blockEnd_.indexIn(text);
+            auto match = blockEnd_.match(text);
 
-            if (i == -1) {
+            if (match.hasMatch()) {
                 res.length.push_back(text.size());
                 res.outgoingState = 1;
                 return res;
             }
 
-            res.length.push_back(i + 2);
-            currentFirstNoneCommentCharacter = i + 2;
+            res.length.push_back(match.capturedStart() + 2);
+            currentFirstNoneCommentCharacter = match.capturedStart() + 2;
         }
 
-        int start;
-
-        while ((start = blockStart_.indexIn(text, currentFirstNoneCommentCharacter)) != -1) {
-            res.start.push_back(start);
-            int i = blockEnd_.indexIn(text, currentFirstNoneCommentCharacter);
-
-            if (i == -1) {
+        for (auto match = blockStart_.match(text, currentFirstNoneCommentCharacter); match.hasMatch(); match = blockStart_.match(text, currentFirstNoneCommentCharacter)) {
+            res.start.push_back(match.capturedStart());
+            
+            auto endmatch = blockEnd_.match(text, currentFirstNoneCommentCharacter);
+            if (!endmatch.hasMatch()) {
                 res.length.push_back(text.size());
                 res.outgoingState = 1;
                 return res;
             }
 
-            res.length.push_back(i + 2);
-            currentFirstNoneCommentCharacter = i + 2;
+            res.length.push_back(endmatch.capturedStart() + 2);
+            currentFirstNoneCommentCharacter = endmatch.capturedStart() + 2;
         }
 
         return res;
@@ -284,9 +283,9 @@ public:
 
 private:
     QTextCharFormat format_;
-    QRegExp oneLineComment_;
-    QRegExp blockStart_;
-    QRegExp blockEnd_;
+    QRegularExpression oneLineComment_;
+    QRegularExpression blockStart_;
+    QRegularExpression blockEnd_;
 };
 
 class GLSLPreProcessorFormater : public SyntaxFormater {
@@ -294,15 +293,13 @@ public:
     virtual Result eval(const QString& text, const int& /*previousBlockState*/) override {
         Result result;
         result.format = &format_;
-        std::vector<QRegExp>::iterator reg;
-
-        for (reg = regexps_.begin(); reg != regexps_.end(); ++reg) {
-            int pos = 0;
-
-            while ((pos = reg->indexIn(text, pos)) != -1) {
-                result.start.push_back(pos);
-                pos += reg->matchedLength();
-                result.length.push_back(reg->matchedLength());
+        
+        for (const auto& re : regexps_) {
+            auto it = re.globalMatch(text);
+            while (it.hasNext()) {
+                auto match = it.next();
+                result.start.push_back(match.capturedStart());
+                result.length.push_back(match.capturedLength());
             }
         }
 
@@ -314,13 +311,13 @@ public:
         int i = -1;
         while (keywords[++i]) {
             // interpret anything matching a '#' at the beginning, followed by space/tab and keyword
-            regexps_.push_back(QRegExp(QString("#[ \t]*%1").arg(keywords[i])));
+            regexps_.push_back(QRegularExpression(QString("#[ \t]*%1").arg(keywords[i])));
         }
     }
 
 private:
     QTextCharFormat format_;
-    std::vector<QRegExp> regexps_;
+    std::vector<QRegularExpression> regexps_;
 };
 
 class GLSLNumberFormater : public SyntaxFormater {
@@ -329,14 +326,13 @@ public:
         Result result;
         result.format = &format_;
 
-        int pos = 0;
-
-        while ((pos = regexp_.indexIn(text, pos)) != -1) {
-            result.start.push_back(pos);
-            pos += regexp_.matchedLength();
-            result.length.push_back(regexp_.matchedLength());
+        auto it = regexp_.globalMatch(text);
+        while (it.hasNext()) {
+            auto match = it.next();
+            result.start.push_back(match.capturedStart());
+            result.length.push_back(match.capturedLength());
         }
-
+        
         return result;
     }
 
@@ -345,7 +341,7 @@ public:
 
 private:
     QTextCharFormat format_;
-    QRegExp regexp_;
+    QRegularExpression regexp_;
 };
 
 class GLSLKeywordFormater : public SyntaxFormater {
@@ -353,15 +349,13 @@ public:
     virtual Result eval(const QString& text, const int& /*previousBlockState*/) override {
         Result result;
         result.format = &format_;
-        std::vector<QRegExp>::iterator reg;
-
-        for (reg = regexps_.begin(); reg != regexps_.end(); ++reg) {
-            int pos = 0;
-
-            while ((pos = reg->indexIn(text, pos)) != -1) {
-                result.start.push_back(pos);
-                pos += reg->matchedLength();
-                result.length.push_back(reg->matchedLength());
+        
+        for (const auto& re : regexps_) {
+            auto it = re.globalMatch(text);
+            while (it.hasNext()) {
+                auto match = it.next();
+                result.start.push_back(match.capturedStart());
+                result.length.push_back(match.capturedLength());
             }
         }
 
@@ -371,12 +365,12 @@ public:
     GLSLKeywordFormater(const QTextCharFormat& format, const char** keywords) : format_(format) {
         int i = -1;
 
-        while (keywords[++i]) regexps_.push_back(QRegExp(keywords[i]));
+        while (keywords[++i]) regexps_.push_back(QRegularExpression(keywords[i]));
     }
 
 private:
     QTextCharFormat format_;
-    std::vector<QRegExp> regexps_;
+    std::vector<QRegularExpression> regexps_;
 };
 
 template <>

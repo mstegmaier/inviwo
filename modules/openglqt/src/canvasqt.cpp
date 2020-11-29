@@ -363,24 +363,24 @@ bool CanvasQt::mapTouchEvent(QTouchEvent* touch) {
     prevTouchPoints_ = touchPoints;
 
     // Get the device generating the event (touch screen or touch pad)
-    auto deviceIt = touchDevices_.find(touch->device());
+    auto deviceIt = devices_.find(touch->pointingDevice());
     TouchDevice* device = nullptr;
-    if (deviceIt != touchDevices_.end()) {
+    if (deviceIt != devices_.end()) {
         device = &(deviceIt->second);
     } else {
         // Insert device new device into map
         TouchDevice::DeviceType deviceType;
         switch (touch->device()->type()) {
-            case QTouchDevice::DeviceType::TouchScreen:
+            case QPointingDevice::DeviceType::TouchScreen:
                 deviceType = TouchDevice::DeviceType::TouchScreen;
                 break;
-            case QTouchDevice::DeviceType::TouchPad:
+            case QPointingDevice::DeviceType::TouchPad:
                 deviceType = TouchDevice::DeviceType::TouchPad;
                 break;
             default:
                 deviceType = TouchDevice::DeviceType::TouchScreen;
         }
-        device = &(touchDevices_[touch->device()] =
+        device = &(devices_[touch->pointingDevice()] =
                        TouchDevice(deviceType, (touch->device()->name().toStdString())));
     }
     TouchEvent touchEvent(touchPoints, device, utilqt::getModifiers(touch));

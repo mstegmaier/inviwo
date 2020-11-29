@@ -43,6 +43,7 @@
 #include <QMouseEvent>
 #include <QTreeWidget>
 #include <QDrag>
+#include <QStringView>
 #include <warn/pop>
 
 namespace inviwo {
@@ -101,7 +102,7 @@ public:
     Grouping getGrouping() const;
 
 protected:
-    bool processorFits(ProcessorFactoryObject* processor, const QString& filter);
+    bool processorFits(ProcessorFactoryObject* processor, QStringView filter);
     const QIcon* getCodeStateIcon(CodeState) const;
 
 private:

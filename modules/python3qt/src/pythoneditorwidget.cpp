@@ -191,7 +191,7 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
         icon.addFile(":/svgicons/log-clear-on-run.svg", QSize(), QIcon::Normal, QIcon::Off);
 
         appendLog_ = toolBar->addAction(icon, "Append Log");
-        appendLog_->setShortcut(Qt::ControlModifier + Qt::Key_A);
+        appendLog_->setShortcut(Qt::CTRL | Qt::Key_A);
         appendLog_->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         appendLog_->setCheckable(true);
         appendLog_->setChecked(true);
@@ -206,7 +206,7 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
     }
     {
         auto action = toolBar->addAction(QIcon(":/svgicons/log-clear.svg"), "Clear Log Output");
-        action->setShortcut(Qt::ControlModifier + Qt::Key_E);
+        action->setShortcut(Qt::CTRL | Qt::Key_E);
         action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         action->setToolTip("Clear Log Output");
         mainWindow_->addAction(action);

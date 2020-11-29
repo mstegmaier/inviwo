@@ -40,7 +40,7 @@
 #include <QEvent>
 #include <QHelpEvent>
 #include <QGestureEvent>
-#include <QTouchDevice>
+#include <QPointingDevice>
 #include <QTouchEvent>
 #include <warn/pop>
 
@@ -84,7 +84,7 @@ private:
     bool mapPinchTriggered(QPinchGesture* e);
 
     //! Links QTouchDevice to inviwo::TouchDevice
-    std::map<QTouchDevice*, TouchDevice> touchDevices_;
+    std::map<const QPointingDevice*, TouchDevice> devices_;
     //! Compare with next touch event to prevent duplicates
     std::vector<TouchPoint> prevTouchPoints_;
     Qt::GestureType lastType_{};

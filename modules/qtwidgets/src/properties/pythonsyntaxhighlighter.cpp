@@ -38,6 +38,7 @@
 #include <warn/ignore/all>
 #include <QTextDocument>
 #include <QTextBlock>
+#include <QRegularExpression>
 #include <warn/pop>
 
 static const std::vector<std::string> python_keywords = {
@@ -77,31 +78,27 @@ public:
     virtual Result eval(const QString& text, const int& /*previousBlockState*/) override {
         Result result;
         result.format = &format_;
-        std::vector<QRegExp>::iterator reg;
-
-        for (reg = regexps_.begin(); reg != regexps_.end(); ++reg) {
-            int pos = 0;
-
-            while ((pos = reg->indexIn(text, pos)) != -1) {
-                result.start.push_back(pos);
-                pos += std::max(1, reg->matchedLength());
-                result.length.push_back(reg->matchedLength());
+        for (const auto& re: regexps_) {
+            auto it = re.globalMatch(text);
+            while (it.hasNext()) {
+                auto match = it.next();
+                result.start.push_back(match.capturedStart());
+                result.length.push_back(match.capturedLength());
             }
         }
-
         return result;
     }
 
     PythonKeywordFormater(const QTextCharFormat& format, const std::vector<std::string>& keywords)
         : format_(format) {
         for (const auto& key : keywords) {
-            regexps_.push_back(QRegExp(key.c_str()));
+            regexps_.push_back(QRegularExpression(key.c_str()));
         }
     }
 
 private:
     QTextCharFormat format_;
-    std::vector<QRegExp> regexps_;
+    std::vector<QRegularExpression> regexps_;
 };
 
 static inline QColor ivec4toQtColor(const ivec4& i) { return QColor(i.r, i.g, i.b, i.a); }

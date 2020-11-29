@@ -47,7 +47,6 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QPixmap>
-#include <QDesktopWidget>
 #include <QMenu>
 #include <QAction>
 #include <QMenuBar>
