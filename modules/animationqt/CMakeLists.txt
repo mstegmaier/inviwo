@@ -2,9 +2,9 @@
 # Inviwo AnimationQt Module
 ivw_module(AnimationQt)
 
-find_package(Qt5Core QUIET REQUIRED)
-find_package(Qt5Gui QUIET REQUIRED)
-find_package(Qt5Widgets QUIET REQUIRED)
+find_package(Qt6Core QUIET REQUIRED)
+find_package(Qt6Gui QUIET REQUIRED)
+find_package(Qt6Widgets QUIET REQUIRED)
 
 #--------------------------------------------------------------------
 # Add header files
@@ -66,7 +66,7 @@ set(SOURCE_FILES
 ivw_group("Source Files" ${SOURCE_FILES})
 
 # Add some qt specific things
-qt5_add_resources(QRC_FILE "${CMAKE_CURRENT_SOURCE_DIR}/resources/animation.qrc")
+qt6_add_resources(QRC_FILE "${CMAKE_CURRENT_SOURCE_DIR}/resources/animation.qrc")
 source_group("Resource Files" FILES 
     ${CMAKE_CURRENT_SOURCE_DIR}/resources/animation.qrc 
     ${QRC_FILE}
@@ -75,7 +75,7 @@ source_group("Resource Files" FILES
 #--------------------------------------------------------------------
 # Create module
 ivw_create_module(NO_PCH ${SOURCE_FILES} ${HEADER_FILES} ${QRC_FILE})
-target_link_libraries(inviwo-module-animationqt PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets)
+target_link_libraries(inviwo-module-animationqt PRIVATE Qt6::Core Qt6::Gui Qt6::Widgets)
 
 #ivw_compile_optimize_on_target(inviwo-module-animationqt)
 

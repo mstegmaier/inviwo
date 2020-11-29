@@ -2,10 +2,10 @@
 # Inviwo DataFrameQt Module
 ivw_module(DataFrameQt)
 
-find_package(Qt5Core QUIET REQUIRED)
-find_package(Qt5Gui QUIET REQUIRED)
-find_package(Qt5Widgets QUIET REQUIRED)
-find_package(Qt5Svg QUIET REQUIRED)
+find_package(Qt6Core QUIET REQUIRED)
+find_package(Qt6Gui QUIET REQUIRED)
+find_package(Qt6Widgets QUIET REQUIRED)
+find_package(Qt6Svg QUIET REQUIRED)
 
 #-------------------------------------------------------------------- 
 # Add MOC files
@@ -37,13 +37,13 @@ set(SOURCE_FILES
 ivw_group("Source Files" ${SOURCE_FILES})
 
 # Add moc files
-qt5_wrap_cpp(MOCED_FILES ${MOC_FILES})
+qt6_wrap_cpp(MOCED_FILES ${MOC_FILES})
 source_group("MOC Files" FILES ${MOCED_FILES})
 
 #--------------------------------------------------------------------
 # Create module
 ivw_create_module(NO_PCH ${SOURCE_FILES} ${MOCED_FILES} ${HEADER_FILES})
-target_link_libraries(inviwo-module-dataframeqt PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets)
+target_link_libraries(inviwo-module-dataframeqt PRIVATE Qt6::Core Qt6::Gui Qt6::Widgets)
 
 ivw_compile_optimize_on_target(inviwo-module-dataframeqt)
 

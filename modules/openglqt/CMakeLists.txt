@@ -2,8 +2,8 @@
 # Inviwo OpenGLQt Module
 ivw_module(OpenGLQt)
 
-find_package(Qt5OpenGL QUIET REQUIRED)
-find_package(Qt5Svg QUIET REQUIRED)
+find_package(Qt6 COMPONENTS Svg OpenGL OpenGLWidgets REQUIRED) 
+
 
 #--------------------------------------------------------------------
 # Add MOC files
@@ -40,14 +40,14 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
-qt5_wrap_cpp(MOCED_FILES ${MOC_FILES})
+qt6_wrap_cpp(MOCED_FILES ${MOC_FILES})
 source_group("MOC Files" FILES ${MOCED_FILES})
 
 # Create module
 ivw_create_module(NO_PCH ${SOURCE_FILES} ${MOCED_FILES} ${HEADER_FILES})
-target_link_libraries(inviwo-module-openglqt PRIVATE Qt5::OpenGL Qt5::Svg)
+target_link_libraries(inviwo-module-openglqt PRIVATE Qt6::OpenGL Qt6::Svg Qt6::OpenGLWidgets)
 
 ivw_deploy_qt(inviwo-module-openglqt)
 
 ivw_make_package(InviwoOpenGLQtModule inviwo-module-openglqt)
-ivw_qt_add_to_install(qt_modules Qt5OpenGL)
+ivw_qt_add_to_install(qt_modules Qt6OpenGL)

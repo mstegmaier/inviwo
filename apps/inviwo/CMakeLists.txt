@@ -1,8 +1,8 @@
 # Inviwo Qt Application
 project(inviwo)
 
-find_package(Qt5Core QUIET REQUIRED)
-find_package(Qt5Widgets QUIET REQUIRED)
+find_package(Qt6Core QUIET REQUIRED)
+find_package(Qt6Widgets QUIET REQUIRED)
 
 # Add MOC files
 set(MOC_FILES  ${IVW_APPLICATION_DIR}/inviwo/inviwosplashscreen.h)
@@ -19,7 +19,7 @@ set(SOURCE_FILES
 ivw_group("Source Files" ${SOURCE_FILES})
 
 # Add moc files
-qt5_wrap_cpp(MOC_FILES ${MOC_FILES})
+qt6_wrap_cpp(MOC_FILES ${MOC_FILES})
 source_group("MOC Files" FILES ${MOC_FILES})
 
 # Define libraries that should be linked
@@ -47,8 +47,8 @@ target_link_libraries(inviwo PUBLIC
     inviwo::core
     inviwo::qtapplicationbase
     inviwo::qteditor
-    Qt5::Core
-    Qt5::Widgets
+    Qt6::Core
+    Qt6::Widgets
 )
 set_target_properties(inviwo PROPERTIES OUTPUT_NAME "Inviwo")
 
@@ -118,8 +118,8 @@ if(WIN32)
         inviwo::core 
         inviwo::qtapplicationbase
         inviwo::qteditor
-        Qt5::Core 
-        Qt5::Widgets
+        Qt6::Core 
+        Qt6::Widgets
     )
     set_target_properties(inviwo-cli PROPERTIES OUTPUT_NAME "Inviwo-cli")
     ivw_configure_application_module_dependencies(inviwo-cli ${enabled_modules})
