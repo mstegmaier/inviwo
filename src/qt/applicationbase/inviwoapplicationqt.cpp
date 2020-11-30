@@ -329,8 +329,8 @@ bool InviwoApplicationQt::notify(QObject* receiver, QEvent* e) {
         }
         case QEvent::TouchEnd: {
             auto te = static_cast<QTouchEvent*>(e);
-            if (util::all_of(te->touchPoints(), [](const QTouchEvent::TouchPoint& tp) {
-                    return tp.state() == Qt::TouchPointReleased;
+            if (util::all_of(te->points(), [](const QEventPoint& p) {
+                    return p.state() == QEventPoint::State::Released;
                 })) {
                 undoTrigger_();
                 break;

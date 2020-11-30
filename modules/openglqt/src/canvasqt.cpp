@@ -138,7 +138,7 @@ void CanvasQt::doContextMenu(QMouseEvent* event) {
                     &QAction::triggered, this, prop(ViewEvent::FlipUp{}));
         }
 
-        menu.exec(event->globalPos());
+        menu.exec(event->globalPosition().toPoint());
     }
 }
 
@@ -184,7 +184,7 @@ dvec2 CanvasQt::normalPos(dvec2 pos) const {
 bool CanvasQt::mapMousePressEvent(QMouseEvent* e) {
     if (e->source() != Qt::MouseEventNotSynthesized) return true;
 
-    const auto pos{normalPos(utilqt::toGLM(e->localPos()))};
+    const auto pos{normalPos(utilqt::toGLM(e->position()))};
 
     MouseEvent mouseEvent(utilqt::getMouseButtonCausingEvent(e), MouseState::Press,
                           utilqt::getMouseButtons(e), utilqt::getModifiers(e), pos,
@@ -203,7 +203,7 @@ bool CanvasQt::mapMousePressEvent(QMouseEvent* e) {
 bool CanvasQt::mapMouseDoubleClickEvent(QMouseEvent* e) {
     if (e->source() != Qt::MouseEventNotSynthesized) return true;
 
-    const auto pos{normalPos(utilqt::toGLM(e->localPos()))};
+    const auto pos{normalPos(utilqt::toGLM(e->position()))};
     MouseEvent mouseEvent(utilqt::getMouseButtonCausingEvent(e), MouseState::DoubleClick,
                           utilqt::getMouseButtons(e), utilqt::getModifiers(e), pos,
                           getImageDimensions(), getDepthValueAtNormalizedCoord(pos));
@@ -219,7 +219,7 @@ bool CanvasQt::mapMouseDoubleClickEvent(QMouseEvent* e) {
 bool CanvasQt::mapMouseReleaseEvent(QMouseEvent* e) {
     if (e->source() != Qt::MouseEventNotSynthesized) return true;
 
-    const auto pos{normalPos(utilqt::toGLM(e->localPos()))};
+    const auto pos{normalPos(utilqt::toGLM(e->position()))};
 
     MouseEvent mouseEvent(utilqt::getMouseButtonCausingEvent(e), MouseState::Release,
                           utilqt::getMouseButtons(e), utilqt::getModifiers(e), pos,
@@ -239,7 +239,7 @@ bool CanvasQt::mapMouseReleaseEvent(QMouseEvent* e) {
 bool CanvasQt::mapMouseMoveEvent(QMouseEvent* e) {
     if (e->source() != Qt::MouseEventNotSynthesized) return true;
 
-    const auto pos{normalPos(utilqt::toGLM(e->localPos()))};
+    const auto pos{normalPos(utilqt::toGLM(e->position()))};
 
     MouseEvent mouseEvent(MouseButton::None, MouseState::Move, utilqt::getMouseButtons(e),
                           utilqt::getModifiers(e), pos, getImageDimensions(),
@@ -315,33 +315,33 @@ bool CanvasQt::mapTouchEvent(QTouchEvent* touch) {
 
     // Copy touch points
     std::vector<TouchPoint> touchPoints;
-    touchPoints.reserve(touch->touchPoints().size());
+    touchPoints.reserve(touch->points().size());
     const uvec2 imageSize(getImageDimensions());
 
-    for (const auto& touchPoint : touch->touchPoints()) {
-        const auto pos = normalPos(utilqt::toGLM(touchPoint.pos()));
-        const auto prevPos = normalPos(utilqt::toGLM(touchPoint.lastPos()));
-        const auto pressedPos = normalPos(utilqt::toGLM(touchPoint.startPos()));
-        const auto pressure = touchPoint.pressure();
+    for (const auto& point : touch->points()) {
+        const auto pos = normalPos(utilqt::toGLM(point.position()));
+        const auto prevPos = normalPos(utilqt::toGLM(point.lastPosition()));
+        const auto pressedPos = normalPos(utilqt::toGLM(point.pressPosition()));
+        const auto pressure = point.pressure();
 
         TouchState touchState;
-        switch (touchPoint.state()) {
-            case Qt::TouchPointPressed:
+        switch (point.state()) {
+            case QEventPoint::State::Pressed:
                 touchState = TouchState::Started;
                 break;
-            case Qt::TouchPointMoved:
+            case QEventPoint::State::Updated:
                 touchState = TouchState::Updated;
                 break;
-            case Qt::TouchPointStationary:
+            case QEventPoint::State::Stationary:
                 touchState = TouchState::Stationary;
                 break;
-            case Qt::TouchPointReleased:
+            case QEventPoint::State::Released:
                 touchState = TouchState::Finished;
                 break;
             default:
                 touchState = TouchState::None;
         }
-        touchPoints.emplace_back(touchPoint.id(), touchState, pos, prevPos, pressedPos, imageSize,
+        touchPoints.emplace_back(point.id(), touchState, pos, prevPos, pressedPos, imageSize,
                                  pressure, getDepthValueAtNormalizedCoord(pos));
     }
     // Ensure that the order to the touch points are the same as last touch event.
@@ -386,7 +386,7 @@ bool CanvasQt::mapTouchEvent(QTouchEvent* touch) {
     TouchEvent touchEvent(touchPoints, device, utilqt::getModifiers(touch));
     touch->accept();
 
-    lastNumFingers_ = static_cast<int>(touch->touchPoints().size());
+    lastNumFingers_ = static_cast<int>(touch->points().size());
     screenPositionNormalized_ = touchEvent.centerPointNormalized();
 
     propagateEvent(&touchEvent);

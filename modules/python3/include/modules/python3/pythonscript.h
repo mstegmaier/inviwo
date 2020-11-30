@@ -36,7 +36,7 @@
 #include <inviwo/core/util/callback.h>
 
 #include <warn/push>
-#include <warn/ignore/shadow>
+#include <warn/ignore/all>
 #include <pybind11/pybind11.h>
 #include <warn/pop>
 

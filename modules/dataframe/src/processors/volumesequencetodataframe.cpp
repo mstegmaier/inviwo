@@ -182,7 +182,7 @@ void VolumeSequenceToDataFrame::process() {
     auto indexMapper = util::IndexMapper3D(dims);
 
     size_t volumeNumber = 1;
-    for (const auto volume : volumeSequence) {
+    for (const auto& volume : volumeSequence) {
         const auto numericType = volume->getDataFormat()->getNumericType();
         if (numericType != NumericType::Float) continue;
         std::vector<std::vector<float> *> channelBuffer_;

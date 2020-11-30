@@ -130,13 +130,13 @@ public:
 
     virtual void mousePressEvent(QMouseEvent* e) override {
         pressingOnTimeline_ = true;
-        view_->setTimelinePos(e->x());
+        view_->setTimelinePos(e->position().x());
         QWidget::mousePressEvent(e);
     }
 
     virtual void mouseMoveEvent(QMouseEvent* e) override {
         if (pressingOnTimeline_) {
-            view_->setTimelinePos(e->x());
+            view_->setTimelinePos(e->position().x());
         }
         QWidget::mouseMoveEvent(e);
     }
@@ -210,7 +210,7 @@ void AnimationViewQt::keyReleaseEvent(QKeyEvent* keyEvent) {
 void AnimationViewQt::mousePressEvent(QMouseEvent* e) {
     if (itemAt(e->pos()) == nullptr && e->modifiers() == Qt::NoModifier) {
         pressingOnTimeline_ = true;
-        setTimelinePos(e->x());
+        setTimelinePos(e->position().x());
     }
 
     QGraphicsView::mousePressEvent(e);
@@ -218,7 +218,7 @@ void AnimationViewQt::mousePressEvent(QMouseEvent* e) {
 
 void AnimationViewQt::mouseMoveEvent(QMouseEvent* e) {
     if (pressingOnTimeline_) {
-        setTimelinePos(e->x());
+        setTimelinePos(e->position().x());
     }
 
     QGraphicsView::mouseMoveEvent(e);

@@ -41,10 +41,9 @@ namespace inviwo {
 namespace {
 std::vector<std::string> getMonoSpaceFonts() {
     std::vector<std::string> fonts;
-    QFontDatabase fontdb;
 
-    for (auto& font : fontdb.families()) {
-        if (fontdb.isFixedPitch(font)) {
+    for (auto& font : QFontDatabase::families()) {
+        if (QFontDatabase::isFixedPitch(font)) {
             fonts.push_back(utilqt::fromQString(font));
         }
     }

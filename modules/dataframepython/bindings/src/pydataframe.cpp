@@ -30,7 +30,7 @@
 #include <ivwdataframe/pydataframe.h>
 
 #include <warn/push>
-#include <warn/ignore/shadow>
+#include <warn/ignore/all>
 #include <pybind11/functional.h>
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
